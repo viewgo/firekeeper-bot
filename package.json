@@ -4,6 +4,7 @@
     "description": "Countdown to Elden Ring release",
     "main": "index.js",
     "author": "Hugo Oliveira",
+    "scripts": {"start": "node index.js"},
     "dependencies": {
         "@discordjs/builders": "^0.12.0",
         "@discordjs/rest": "^0.3.0",
