@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const fs = require("fs");
 
 module.exports = {
   data: {
@@ -11,9 +12,9 @@ module.exports = {
     if (!target) return;
     if (target.toLowerCase() === msg.author.username.toLowerCase()) return;
 
-    const users = JSON.parse(require("fs").readFileSync("./users.json"));
-    const user = _.find(users, { username: msg.author.username });
-    const targetUser = _.find(
+    let users = JSON.parse(require("fs").readFileSync("./users.json"));
+    let user = _.find(users, { username: msg.author.username });
+    let targetUser = _.find(
       users,
       (u) => u.username.toLowerCase() === target.toLowerCase()
     );
@@ -29,13 +30,55 @@ module.exports = {
 
     if (outcome) {
       const amtOfSouls = Math.floor(targetUser.souls / 2);
+
+      users = users.map((u) =>
+        u.id === user.id
+          ? {
+              ...u,
+              souls: u.souls + amtOfSouls,
+            }
+          : u.id === targetUser.id
+          ? {
+              ...u,
+              souls: u.souls - amtOfSouls,
+            }
+          : u
+      );
+
+      const res = await fs.writeFileSync("users.json", JSON.stringify(users));
+      console.log(res);
+
+      users = JSON.parse(require("fs").readFileSync("./users.json"));
+      user = _.find(users, { id: msg.author.id });
+
       await msg.channel.send(
         `**HOST OF EMBERS DESTROYED**\n**${user.username}** took possession of **${amtOfSouls}** of **${targetUser.username}'s** souls`
       );
     } else {
       const amtOfSouls = Math.floor(user.souls / 2);
+
+      users = users.map((u) =>
+        u.id === targetUser.id
+          ? {
+              ...u,
+              souls: u.souls + amtOfSouls,
+            }
+          : u.id === user.id
+          ? {
+              ...u,
+              souls: u.souls - amtOfSouls,
+            }
+          : u
+      );
+
+      const res = await fs.writeFileSync("users.json", JSON.stringify(users));
+      console.log(res);
+
+      users = JSON.parse(require("fs").readFileSync("./users.json"));
+      user = _.find(users, { id: msg.author.id });
+
       await msg.channel.send(
-        `**PHANTOM VANQUISHED**\n**${targetUser.username}** took possession of **${amtOfSouls}** of **${user.username}'s** souls`
+        `**DARK SPIRIT DESTROYED**\n**${targetUser.username}** took possession of **${amtOfSouls}** of **${user.username}'s** souls`
       );
     }
 
