@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const fs = require("fs");
+const moment = require("moment");
 
 module.exports = {
   data: {
@@ -10,23 +11,36 @@ module.exports = {
     const target = msg.content.slice(1).split(" ")[1];
 
     if (!target) return;
-    if (target.toLowerCase() === msg.author.username.toLowerCase()) return;
+
+    if (
+      target.toLowerCase() === msg.author.username.toLowerCase() ||
+      target === msg.author.id
+    )
+      return;
 
     let users = JSON.parse(require("fs").readFileSync("./users.json"));
     let user = _.find(users, { username: msg.author.username });
     let targetUser = _.find(
       users,
-      (u) => u.username.toLowerCase() === target.toLowerCase()
+      (u) =>
+        u.username.toLowerCase() === target.toLowerCase() || u.id === target
     );
-
-    console.log(user, targetUser);
 
     if (!user) return;
     if (!targetUser) return;
 
-    const outcome = Math.floor(Math.random() * 2);
+    const dur = moment.duration(moment().diff(moment(targetUser.lastInvaded)));
 
-    console.log("OUTCOME:", outcome);
+    let minutes = dur.minutes();
+
+    if (minutes <= 60) {
+      await msg.channel.send(
+        `**${targetUser.username}** was last invaded ${minutes} minutes ago.`
+      );
+      return;
+    }
+
+    const outcome = Math.floor(Math.random() * 2);
 
     if (outcome) {
       const amtOfSouls = Math.floor(targetUser.souls / 2);
@@ -36,17 +50,19 @@ module.exports = {
           ? {
               ...u,
               souls: u.souls + amtOfSouls,
+              spirits: u.spirits ? u.spirits + 1 : 1,
             }
           : u.id === targetUser.id
           ? {
               ...u,
               souls: u.souls - amtOfSouls,
+              lastInvaded: moment.now(),
+              deaths: u.deaths ? u.deaths + 1 : 1,
             }
           : u
       );
 
-      const res = await fs.writeFileSync("users.json", JSON.stringify(users));
-      console.log(res);
+      await fs.writeFileSync("users.json", JSON.stringify(users));
 
       users = JSON.parse(require("fs").readFileSync("./users.json"));
       user = _.find(users, { id: msg.author.id });
@@ -62,6 +78,8 @@ module.exports = {
           ? {
               ...u,
               souls: u.souls + amtOfSouls,
+              lastInvaded: moment.now(),
+              hosts: u.hosts ? u.hosts + 1 : 1,
             }
           : u.id === user.id
           ? {
@@ -71,8 +89,7 @@ module.exports = {
           : u
       );
 
-      const res = await fs.writeFileSync("users.json", JSON.stringify(users));
-      console.log(res);
+      await fs.writeFileSync("users.json", JSON.stringify(users));
 
       users = JSON.parse(require("fs").readFileSync("./users.json"));
       user = _.find(users, { id: msg.author.id });

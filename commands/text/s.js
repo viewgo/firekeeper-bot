@@ -1,9 +1,9 @@
-const souls = require("./souls");
+const stats = require("./stats");
 
 module.exports = {
   data: {
     name: "s",
-    description: souls.data.description,
+    description: stats.data.description,
   },
-  execute: souls.execute,
+  execute: stats.execute,
 };

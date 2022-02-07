@@ -1,8 +1,10 @@
 const _ = require("lodash");
+const moment = require("moment");
+const { getUserText } = require("../../tools");
 
 module.exports = {
   data: {
-    name: "souls",
+    name: "stats",
     description: "",
   },
   execute: async (msg) => {
@@ -23,10 +25,8 @@ module.exports = {
       var user = _.find(users, { id: msg.author.id });
     }
 
-    await msg.channel.send(
-      `**${user.username}**\nLevel: *${
-        user.level
-      }*\nSouls: *${user.souls.toLocaleString("en-US")}*`
-    );
+    const dur = moment.duration(moment().diff(moment(user.lastInvaded)));
+
+    await msg.channel.send(getUserText(user));
   },
 };
