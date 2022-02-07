@@ -40,13 +40,13 @@ client.once("ready", () => {
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
   if (msg.content.startsWith(commandKey)) {
-    const commandName = msg.content.slice(1);
-    const command = client.textCommands.get(commandName);
+    const commandName = msg.content.slice(1).split(" ");
+    const command = client.textCommands.get(commandName[0]);
 
     if (!command) return;
 
     try {
-      await command.execute(msg);
+      await command.execute(msg, client);
     } catch (error) {
       console.error(error);
     }
@@ -54,26 +54,21 @@ client.on("messageCreate", async (msg) => {
     const user = _.find(users, { id: msg.author.id });
 
     if (user) {
-      console.log("USER FOUND: ", user);
+      console.log(user);
       users = users.map((u) =>
-        u.id === user.id ? { ...u, souls: u.souls + 1 } : u
+        u.id === user.id
+          ? { ...u, username: msg.author.username, souls: u.souls + 1 }
+          : u
       );
 
       fs.writeFileSync("users.json", JSON.stringify(users));
     } else {
-      console.log(
-        "USER NOT FOUND! ADDING USER " +
-          msg.author.id +
-          " " +
-          msg.author.username
-      );
       users.push({
         id: msg.author.id,
-        username: msg.author.id,
+        username: msg.author.username,
         souls: 0,
         level: 1,
       });
-      console.log(users);
 
       fs.writeFileSync("users.json", JSON.stringify(users));
     }

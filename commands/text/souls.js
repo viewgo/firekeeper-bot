@@ -10,9 +10,9 @@ module.exports = {
     const user = _.find(users, { id: msg.author.id });
 
     await msg.channel.send(
-      `**viewgo**\nLevel: *${user.level}*\nSouls: *${user.souls.toLocaleString(
-        "en-US"
-      )}*`
+      `**${user.username}**\nLevel: *${
+        user.level
+      }*\nSouls: *${user.souls.toLocaleString("en-US")}*`
     );
   },
 };
