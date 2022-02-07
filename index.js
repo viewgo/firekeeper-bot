@@ -1,6 +1,9 @@
+const _ = require("lodash");
 const fs = require("fs");
 const { Client, Collection, Intents } = require("discord.js");
 require("dotenv").config();
+
+let users = require(`./users.json`);
 
 const client = new Client({
   intents: [
@@ -9,6 +12,7 @@ const client = new Client({
     Intents.FLAGS.DIRECT_MESSAGES,
   ],
 });
+const commandKey = "!";
 
 client.slashCommands = new Collection();
 client.textCommands = new Collection();
@@ -30,22 +34,49 @@ for (const file of textCommandFiles) {
 }
 
 client.once("ready", () => {
-  console.log("Ready!");
-  console.log(slashCommandFiles);
+  console.log("Fire Keeper Bot Ready!");
 });
 
 client.on("messageCreate", async (msg) => {
-  if (!msg.content.startsWith("!")) return;
+  if (msg.author.bot) return;
+  if (msg.content.startsWith(commandKey)) {
+    const commandName = msg.content.slice(1);
+    const command = client.textCommands.get(commandName);
 
-  const commandName = msg.content.slice(1);
-  const command = client.textCommands.get(commandName);
+    if (!command) return;
 
-  if (!command) return;
+    try {
+      await command.execute(msg);
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    const user = _.find(users, { id: msg.author.id });
 
-  try {
-    await command.execute(msg);
-  } catch (error) {
-    console.error(error);
+    if (user) {
+      console.log("USER FOUND: ", user);
+      users = users.map((u) =>
+        u.id === user.id ? { ...u, souls: u.souls + 1 } : u
+      );
+
+      fs.writeFileSync("users.json", JSON.stringify(users));
+    } else {
+      console.log(
+        "USER NOT FOUND! ADDING USER " +
+          msg.author.id +
+          " " +
+          msg.author.username
+      );
+      users.push({
+        id: msg.author.id,
+        username: msg.author.id,
+        souls: 0,
+        level: 1,
+      });
+      console.log(users);
+
+      fs.writeFileSync("users.json", JSON.stringify(users));
+    }
   }
 });
 
