@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const fs = require("fs");
-const soulsNeeded = require("../../soulsneeded.json");
+const soulsNeeded = require("../../../tools/soulsneeded.json");
 
 module.exports = {
   data: {
@@ -8,6 +8,8 @@ module.exports = {
     description: "",
   },
   execute: async (msg) => {
+    return;
+
     console.log();
     let users = JSON.parse(require("fs").readFileSync("./users.json"));
     let user = _.find(users, { id: msg.author.id });
