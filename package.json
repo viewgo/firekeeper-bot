@@ -1,11 +1,11 @@
 {
-  "name": "elden-ring-countdown",
-  "version": "1.0.0",
-  "description": "Countdown to Elden Ring release",
+  "name": "firekeeper-bot",
+  "version": "0.1.1",
+  "description": "A Soulsborne focused Discord bot.",
   "main": "index.js",
   "author": "Hugo Oliveira",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/server/server.js"
   },
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
