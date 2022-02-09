@@ -39,25 +39,33 @@ module.exports = {
           "#infobox > div > table > tbody > tr:nth-child(1) > th > h2",
           html
         ).text();
+
+        if (!obj.name) throw new Error();
+
         obj.description = $(
           "#wiki-content-block > p:nth-child(2)",
           html
         ).text();
-        obj.flavor = $("#wiki-content-block > div.lineleft > p > em", html)
-          .html()
-          .replace(/<br>/g, "\n");
-        obj.img = baseUrl + $("#infobox", html).find("img").attr("src");
+        obj.flavor = $(
+          "#wiki-content-block > div.lineleft > p > em",
+          html
+        ).html();
 
-        console.log(obj.flavor);
+        obj.img = $("#infobox", html).find("img").attr("src");
 
         const embed = new MessageEmbed()
           .setColor("#0099ff")
           .setTitle(obj.name || "")
           .setURL(obj.url)
-          .setImage(obj.img)
           .setDescription(obj.description);
 
+        if (obj.img) {
+          embed.setImage(baseUrl + obj.img);
+        }
+
         if (obj.flavor) {
+          obj.flavor = obj.flavor.replace(/<br>/g, "\n");
+
           embed.addFields(
             // { name: "\u200B", value: "\u200B" },
             { name: "\u200B", value: "*" + obj.flavor + "*", inline: true }
