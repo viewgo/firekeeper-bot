@@ -173,5 +173,5 @@ exports.getTimeSinceLastInvasion = (user) => {
 };
 
 exports.gameSettings = {
-  invasionCooldown: -Infinity, // in minutes
+  invasionCooldown: 60, // in minutes
 };

@@ -16,6 +16,7 @@ module.exports = {
     const user = await findOneUser({
       id: target ? target.id : interaction.user.id,
     });
+
     const embeds = [];
 
     embeds.push(getUserEmbed(user));

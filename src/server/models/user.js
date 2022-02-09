@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const moment = require("moment");
+const { ObjectId } = require("mongodb");
+const Weapon = require("./weapon");
 
 const AttributesSchema = new mongoose.Schema({
   vigor: { type: Number, default: 1 },
@@ -35,6 +37,38 @@ const UserSchema = new mongoose.Schema({
     intelligence: { type: Number, default: 1 },
     faith: { type: Number, default: 1 },
     luck: { type: Number, default: 1 },
+  },
+  equipped: {
+    left1: {
+      type: mongoose.Schema.Types.ObjectId || null,
+      ref: "Weapon",
+      default: null,
+    },
+    left2: {
+      type: mongoose.Schema.Types.ObjectId || null,
+      ref: "Weapon",
+      default: null,
+    },
+    right1: {
+      type: mongoose.Schema.Types.ObjectId || null,
+      ref: "Weapon",
+      default: null,
+    },
+    right2: {
+      type: mongoose.Schema.Types.ObjectId || null,
+      ref: "Weapon",
+      default: null,
+    },
+    spells: [],
+  },
+  knownSpells: { type: [mongoose.Schema.Types.ObjectId] },
+  inventory: {
+    type: [
+      {
+        item: { type: mongoose.Schema.Types.ObjectId },
+        quantity: { type: Number },
+      },
+    ],
   },
 });
 

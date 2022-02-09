@@ -65,12 +65,11 @@ module.exports = {
       await interaction.reply({
         content: `**HOST OF EMBERS DESTROYED**\n**${
           user.username
-        }** took possession of **${amtOfSoulstoLocaleString("en-US")}** of **${
+        }** took possession of **${amtOfSouls.toLocaleString("en-US")}** of **${
           target.username
         }'s** souls`,
         ephemeral: false,
       });
-      await msg.delete();
     } else {
       const amtOfSouls = getAmountOfStolenSouls(user);
 
